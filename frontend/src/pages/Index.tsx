@@ -38,7 +38,6 @@ const Index = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
   const [analyticsOpen, setAnalyticsOpen] = useState(false);
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const [favoritesOpen, setFavoritesOpen] = useState(false);
@@ -112,12 +111,6 @@ const Index = () => {
   
   // Keyboard shortcuts
   useKeyboardShortcuts([
-    {
-      key: 'k',
-      ctrl: true,
-      description: 'Open search',
-      action: () => setSearchOpen(true),
-    },
     {
       key: 'n',
       ctrl: true,
@@ -231,14 +224,6 @@ const Index = () => {
     }
   };
 
-  const handleShare = () => {
-    if (!currentSession) return;
-    
-    const code = shareConversation(currentSession);
-    setShareCode(code);
-    setShareOpen(true);
-  };
-
   const handleShareMessage = (messageId: string) => {
     if (!currentSession) return;
     
@@ -248,6 +233,21 @@ const Index = () => {
     const code = shareMessage(message);
     setShareCode(code);
     setShareOpen(true);
+  };
+
+  const handleSearchResultClick = (sessionId: string, messageId: string) => {
+    switchSession(sessionId);
+    // Scroll to message after switching sessions
+    setTimeout(() => {
+      const messageElement = document.getElementById(`message-${messageId}`);
+      if (messageElement) {
+        messageElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        messageElement.classList.add('ring-2', 'ring-primary', 'ring-offset-2');
+        setTimeout(() => {
+          messageElement.classList.remove('ring-2', 'ring-primary', 'ring-offset-2');
+        }, 2000);
+      }
+    }, 100);
   };
 
   const getThreadCount = (messageId: string) => {
@@ -269,28 +269,10 @@ const Index = () => {
     }, 100);
   };
 
-  const handleSearchResultClick = (sessionId: string, messageId: string) => {
-    switchSession(sessionId);
-    // Scroll to message after switching sessions
-    setTimeout(() => {
-      const messageElement = document.getElementById(`message-${messageId}`);
-      if (messageElement) {
-        messageElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        messageElement.classList.add('ring-2', 'ring-primary', 'ring-offset-2');
-        setTimeout(() => {
-          messageElement.classList.remove('ring-2', 'ring-primary', 'ring-offset-2');
-        }, 2000);
-      }
-    }, 100);
-  };
-
   const handleCommandPaletteAction = (action: string, data?: ConversationTemplate | string) => {
     switch (action) {
       case 'newChat':
         createNewSession();
-        break;
-      case 'search':
-        setSearchOpen(true);
         break;
       case 'settings':
         setSettingsOpen(true);
@@ -335,13 +317,11 @@ const Index = () => {
             onToggle={() => setSidebarOpen(!sidebarOpen)}
             onAuthClick={() => setAuthModalOpen(true)}
             onSettingsClick={() => setSettingsOpen(true)}
-            onSearchClick={() => setSearchOpen(true)}
             onAnalyticsClick={() => setAnalyticsOpen(true)}
             onFavoritesClick={() => setFavoritesOpen(true)}
             onTemplatesClick={() => setTemplatesOpen(true)}
             onPromptLibraryClick={() => setPromptLibraryOpen(true)}
             onSummaryClick={() => setSummaryOpen(true)}
-            onShareClick={handleShare}
             onCommandPaletteClick={() => setCommandPaletteOpen(true)}
             onThemeToggle={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
             isDarkMode={theme === 'dark'}
@@ -351,13 +331,11 @@ const Index = () => {
             <Header
               onMenuClick={() => setSidebarOpen(!sidebarOpen)}
               onSettingsClick={() => setSettingsOpen(true)}
-              onSearchClick={() => setSearchOpen(true)}
               onAnalyticsClick={() => setAnalyticsOpen(true)}
               onFavoritesClick={() => setFavoritesOpen(true)}
               onTemplatesClick={() => setTemplatesOpen(true)}
               onPromptLibraryClick={() => setPromptLibraryOpen(true)}
               onSummaryClick={() => setSummaryOpen(true)}
-              onShareClick={handleShare}
               onCommandPaletteClick={() => setCommandPaletteOpen(true)}
               onNewChat={createNewSession}
               currentSession={currentSession}
@@ -411,13 +389,6 @@ const Index = () => {
           settings={settings}
           onSave={updateSettings}
           onReset={resetSettings}
-        />
-
-        <SearchModal
-          open={searchOpen}
-          onOpenChange={setSearchOpen}
-          sessions={sessions}
-          onResultClick={handleSearchResultClick}
         />
 
         <AnalyticsModal

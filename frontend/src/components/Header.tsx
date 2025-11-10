@@ -1,4 +1,4 @@
-import { Moon, Sun, Menu, Settings, Search, BarChart3, Star, FileCode, BookOpen, FileText, Share2, Command, Pen, MoreVertical, Trash2, Flag } from 'lucide-react';
+import { Moon, Sun, Menu, Settings, BarChart3, Star, FileCode, BookOpen, FileText, Command, Pen, MoreVertical, Trash2, Flag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTheme } from 'next-themes';
 import { ExportMenu } from './ExportMenu';
@@ -15,13 +15,11 @@ import type { ChatSession } from '@/hooks/useChat';
 interface HeaderProps {
   onMenuClick: () => void;
   onSettingsClick: () => void;
-  onSearchClick: () => void;
   onAnalyticsClick: () => void;
   onFavoritesClick: () => void;
   onTemplatesClick: () => void;
   onPromptLibraryClick: () => void;
   onSummaryClick: () => void;
-  onShareClick: () => void;
   onCommandPaletteClick: () => void;
   onNewChat: () => void; // Add this new prop
   currentSession: ChatSession | undefined;
@@ -31,13 +29,11 @@ interface HeaderProps {
 export const Header = ({ 
   onMenuClick, 
   onSettingsClick, 
-  onSearchClick, 
   onAnalyticsClick,
   onFavoritesClick,
   onTemplatesClick,
   onPromptLibraryClick,
   onSummaryClick,
-  onShareClick,
   onCommandPaletteClick,
   onNewChat, // Add this new prop
   currentSession,
@@ -91,10 +87,6 @@ export const Header = ({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem onClick={onShareClick} disabled={!currentSession || currentSession.messages.length === 0}>
-                <Share2 className="mr-2 h-4 w-4" />
-                Share
-              </DropdownMenuItem>
               <DropdownMenuItem>
                 <FileText className="mr-2 h-4 w-4" />
                 Rename
@@ -190,29 +182,6 @@ export const Header = ({
             <Button
               variant="ghost"
               size="icon"
-              onClick={onShareClick}
-              title="Share conversation"
-              className="shrink-0 touch-target"
-              disabled={!currentSession || currentSession.messages.length === 0}
-            >
-              <Share2 className="h-5 w-5" />
-            </Button>
-          </div>
-          <div className="hidden lg:flex">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onSearchClick}
-              title="Search conversations"
-              className="shrink-0 touch-target"
-            >
-              <Search className="h-5 w-5" />
-            </Button>
-          </div>
-          <div className="hidden lg:flex">
-            <Button
-              variant="ghost"
-              size="icon"
               onClick={onAnalyticsClick}
               title="View analytics"
               className="shrink-0 touch-target"
@@ -230,7 +199,14 @@ export const Header = ({
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              onClick={() => {
+                setTheme(theme === 'dark' ? 'light' : 'dark');
+                // Close any open menus on mobile after theme toggle
+                if (window.innerWidth < 1024) {
+                  const dropdowns = document.querySelectorAll('.dropdown-content');
+                  dropdowns.forEach(d => d.classList.add('hidden'));
+                }
+              }}
               className="touch-target"
             >
               <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />

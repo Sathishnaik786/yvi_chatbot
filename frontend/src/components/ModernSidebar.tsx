@@ -19,7 +19,6 @@ import {
   FileCode,
   Star,
   FileText,
-  Share2,
   BarChart3,
   Moon,
   Sun
@@ -40,13 +39,11 @@ interface ModernSidebarProps {
   onAuthClick: () => void;
   onSettingsClick: () => void;
   // Additional props for mobile settings menu
-  onSearchClick: () => void;
   onAnalyticsClick: () => void;
   onFavoritesClick: () => void;
   onTemplatesClick: () => void;
   onPromptLibraryClick: () => void;
   onSummaryClick: () => void;
-  onShareClick: () => void;
   onCommandPaletteClick: () => void;
   onThemeToggle: () => void;
   isDarkMode: boolean;
@@ -63,13 +60,11 @@ export const ModernSidebar = ({
   onToggle,
   onAuthClick,
   onSettingsClick,
-  onSearchClick,
   onAnalyticsClick,
   onFavoritesClick,
   onTemplatesClick,
   onPromptLibraryClick,
   onSummaryClick,
-  onShareClick,
   onCommandPaletteClick,
   onThemeToggle,
   isDarkMode,
@@ -96,8 +91,8 @@ export const ModernSidebar = ({
         className={cn(
           "fixed left-0 top-0 z-50 h-screen bg-sidebar border-r border-sidebar-border",
           "transition-all duration-300 ease-in-out",
-          "flex flex-col overflow-y-auto", // Add overflow-y-auto for scrolling
-          isOpen ? "w-64 md:w-72" : "w-16",
+          "flex flex-col overflow-y-auto smooth-scroll", // Add smooth-scroll for better mobile experience
+          isOpen ? "w-4/5 md:w-64 lg:w-72" : "w-16",
           "lg:relative lg:z-auto lg:translate-x-0",
           !isOpen && "-translate-x-full lg:translate-x-0"
         )}
@@ -338,23 +333,6 @@ export const ModernSidebar = ({
                     <Button
                       variant="ghost"
                       className="w-full justify-start gap-2 text-sidebar-foreground hover:bg-sidebar-accent touch-target"
-                      onClick={onShareClick}
-                      disabled={!currentSession || currentSession.messages.length === 0}
-                    >
-                      <Share2 className="h-4 w-4" />
-                      Share
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start gap-2 text-sidebar-foreground hover:bg-sidebar-accent touch-target"
-                      onClick={onSearchClick}
-                    >
-                      <Search className="h-4 w-4" />
-                      Search
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start gap-2 text-sidebar-foreground hover:bg-sidebar-accent touch-target"
                       onClick={onAnalyticsClick}
                     >
                       <BarChart3 className="h-4 w-4" />
@@ -365,8 +343,14 @@ export const ModernSidebar = ({
                     </div>
                     <Button
                       variant="ghost"
-                      className="w-full justify-start gap-2 text-sidebar-foreground hover:bg-sidebar-accent touch-target"
-                      onClick={onThemeToggle}
+                      className="w-full justify-start gap-2 text-sidebar-foreground hover:bg-sidebar-accent touch-target no-select"
+                      onClick={() => {
+                        onThemeToggle();
+                        // Close sidebar after theme toggle on mobile
+                        if (window.innerWidth < 1024) {
+                          onToggle();
+                        }
+                      }}
                     >
                       {isDarkMode ? (
                         <>
@@ -386,7 +370,7 @@ export const ModernSidebar = ({
                       onClick={onSettingsClick}
                     >
                       <Settings className="h-4 w-4" />
-                      App Settings
+                      Ap Settings
                     </Button>
                   </div>
                   <Button
