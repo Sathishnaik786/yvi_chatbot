@@ -1,13 +1,38 @@
 import type { ChatSession } from '@/hooks/useChat';
 import type { Favorite } from '@/hooks/useFavorites';
 import type { ConversationTemplate } from '@/hooks/useTemplates';
+import type { Message } from '@/hooks/useChat';
 
 export interface ShareData {
   type: 'conversation' | 'favorites' | 'template';
   version: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: any;
   createdAt: number;
 }
+
+type ConversationData = {
+  title?: string;
+  messages?: Message[];
+  messageCount?: number;
+};
+
+type FavoritesData = Array<{
+  messageContent: string;
+  category: string;
+  tags: string[];
+  note: string;
+}>;
+
+type TemplateData = {
+  name?: string;
+  description?: string;
+  icon?: string;
+  category?: string;
+  systemPrompt?: string;
+  starterPrompts?: string[];
+  settings?: Record<string, unknown>;
+};
 
 export const generateShareCode = (data: ShareData): string => {
   const jsonString = JSON.stringify(data);
@@ -75,6 +100,21 @@ export const shareTemplate = (template: ConversationTemplate): string => {
       systemPrompt: template.systemPrompt,
       starterPrompts: template.starterPrompts,
       settings: template.settings,
+    },
+    createdAt: Date.now(),
+  };
+  
+  return generateShareCode(shareData);
+};
+
+export const shareMessage = (message: Message): string => {
+  const shareData: ShareData = {
+    type: 'conversation',
+    version: '1.0',
+    data: {
+      title: 'Shared Message',
+      messages: [message],
+      messageCount: 1,
     },
     createdAt: Date.now(),
   };

@@ -28,7 +28,7 @@ import { useSummarization } from '@/hooks/useSummarization';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { useFolders } from '@/hooks/useFolders';
 import { useLanguage } from '@/hooks/useLanguage';
-import { shareConversation } from '@/utils/sharing';
+import { shareConversation, shareMessage } from '@/utils/sharing';
 import { ThemeProvider } from 'next-themes';
 import { useToast } from '@/hooks/use-toast';
 import { useTheme } from 'next-themes';
@@ -239,6 +239,17 @@ const Index = () => {
     setShareOpen(true);
   };
 
+  const handleShareMessage = (messageId: string) => {
+    if (!currentSession) return;
+    
+    const message = currentSession.messages.find(msg => msg.id === messageId);
+    if (!message) return;
+    
+    const code = shareMessage(message);
+    setShareCode(code);
+    setShareOpen(true);
+  };
+
   const getThreadCount = (messageId: string) => {
     return getThreadsByParentMessage(messageId).length;
   };
@@ -336,7 +347,7 @@ const Index = () => {
             isDarkMode={theme === 'dark'}
           />
 
-          <div className="flex flex-col flex-1 min-w-0">
+          <div className="flex flex-col flex-1 min-w-0 relative">
             <Header
               onMenuClick={() => setSidebarOpen(!sidebarOpen)}
               onSettingsClick={() => setSettingsOpen(true)}
@@ -367,15 +378,18 @@ const Index = () => {
               if (fav) removeFavorite(fav.id);
             }}
             onCreateThread={handleCreateThread}
+            onShareClick={handleShareMessage}
             existingCategories={getAllCategories()}
             existingTags={getAllTags()}
             getThreadCount={getThreadCount}
           />
           
-            <InputBar
-              onSend={handleSendMessage}
-              disabled={isTyping}
-            />
+            <div className="lg:static fixed bottom-0 left-0 right-0 z-10 bg-background border-t border-border lg:border-t-0 lg:bg-transparent lg:z-auto">
+              <InputBar
+                onSend={handleSendMessage}
+                disabled={isTyping}
+              />
+            </div>
           </div>
 
           <AuthModal

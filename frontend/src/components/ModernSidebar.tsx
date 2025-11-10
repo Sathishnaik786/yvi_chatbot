@@ -96,7 +96,7 @@ export const ModernSidebar = ({
         className={cn(
           "fixed left-0 top-0 z-50 h-screen bg-sidebar border-r border-sidebar-border",
           "transition-all duration-300 ease-in-out",
-          "flex flex-col",
+          "flex flex-col overflow-y-auto", // Add overflow-y-auto for scrolling
           isOpen ? "w-64 md:w-72" : "w-16",
           "lg:relative lg:z-auto lg:translate-x-0",
           !isOpen && "-translate-x-full lg:translate-x-0"

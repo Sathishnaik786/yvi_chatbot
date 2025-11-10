@@ -17,6 +17,7 @@ interface ChatWindowProps {
   onToggleFavorite?: (messageId: string, category: string, tags: string[], note: string) => void;
   onRemoveFavorite?: (messageId: string) => void;
   onCreateThread?: (messageId: string, branchName: string) => void;
+  onShareClick?: (messageId: string) => void; // Add this new prop
   existingCategories?: string[];
   existingTags?: string[];
   getThreadCount?: (messageId: string) => number;
@@ -56,21 +57,28 @@ export const ChatWindow = ({
   onToggleFavorite,
   onRemoveFavorite,
   onCreateThread,
+  onShareClick, // Add this new prop
   existingCategories,
   existingTags,
   getThreadCount,
 }: ChatWindowProps) => {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const prevMessagesLength = useRef(messages.length);
 
   useEffect(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      // Use a small delay to ensure DOM is updated
+      setTimeout(() => {
+        if (scrollRef.current) {
+          scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+        }
+      }, 10);
     }
   }, [messages, isTyping]);
 
   return (
     <ScrollArea className="flex-1 chat-scroll smooth-scroll" ref={scrollRef}>
-      <div className="max-w-4xl mx-auto mobile-responsive">
+      <div className="max-w-4xl mx-auto mobile-responsive min-h-full">
         {messages.length === 0 && !isTyping && (
           <div className="flex items-center justify-center h-full min-h-[300px] md:min-h-[400px] px-2 md:px-4">
             <div className="text-center space-y-4 md:space-y-6 max-w-3xl">
@@ -130,6 +138,7 @@ export const ChatWindow = ({
             onToggleFavorite={onToggleFavorite}
             onRemoveFavorite={onRemoveFavorite}
             onCreateThread={onCreateThread}
+            onShareClick={onShareClick} // Add this new prop
             existingCategories={existingCategories}
             existingTags={existingTags}
             threadCount={getThreadCount?.(message.id)}

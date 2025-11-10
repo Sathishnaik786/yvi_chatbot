@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Copy, ThumbsUp, ThumbsDown, Check, Star, GitBranch } from 'lucide-react';
+import { Copy, ThumbsUp, ThumbsDown, Check, Star, GitBranch, Share2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
 import { FeedbackDialog } from './FeedbackDialog';
@@ -37,6 +37,7 @@ interface MessageBubbleProps {
   onToggleFavorite?: (messageId: string, category: string, tags: string[], note: string) => void;
   onRemoveFavorite?: (messageId: string) => void;
   onCreateThread?: (messageId: string, branchName: string) => void;
+  onShareClick?: (messageId: string) => void;
   existingCategories?: string[];
   existingTags?: string[];
   threadCount?: number;
@@ -50,6 +51,7 @@ export const MessageBubble = ({
   onToggleFavorite,
   onRemoveFavorite,
   onCreateThread,
+  onShareClick,
   existingCategories = [],
   existingTags = [],
   threadCount = 0,
@@ -127,7 +129,7 @@ export const MessageBubble = ({
       </div>
 
       {!isUser && (
-        <div className="flex items-center gap-1 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="flex items-center gap-1 mt-2 opacity-100 transition-opacity">
           <Button
             variant="ghost"
             size="sm"
@@ -141,38 +143,6 @@ export const MessageBubble = ({
               <Copy className="h-3 w-3" />
             )}
           </Button>
-
-          {onToggleFavorite && (
-            <Button
-              variant="ghost"
-              size="sm"
-              className={cn(
-                "h-7 md:h-8 px-1 md:px-2 touch-target",
-                isFavorite && "text-yellow-500"
-              )}
-              onClick={handleToggleFavorite}
-              title={isFavorite ? "Remove from favorites" : "Add to favorites"}
-            >
-              <Star className={cn("h-3 w-3", isFavorite && "fill-yellow-500")} />
-            </Button>
-          )}
-
-          {onCreateThread && (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-7 md:h-8 px-1 md:px-2 relative touch-target"
-              onClick={() => setThreadDialogOpen(true)}
-              title="Create thread"
-            >
-              <GitBranch className="h-3 w-3" />
-              {threadCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-[8px] md:text-[10px] rounded-full w-4 h-4 flex items-center justify-center">
-                  {threadCount}
-                </span>
-              )}
-            </Button>
-          )}
           
           {onFeedback && (
             <>
@@ -201,6 +171,18 @@ export const MessageBubble = ({
                 <ThumbsDown className="h-3 w-3" />
               </Button>
             </>
+          )}
+          
+          {onShareClick && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 md:h-8 px-1 md:px-2 touch-target"
+              onClick={() => onShareClick(message.id)}
+              title="Share message"
+            >
+              <Share2 className="h-3 w-3" />
+            </Button>
           )}
         </div>
       )}
