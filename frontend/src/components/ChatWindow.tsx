@@ -66,18 +66,26 @@ export const ChatWindow = ({
   const prevMessagesLength = useRef(messages.length);
 
   useEffect(() => {
-    if (scrollRef.current) {
-      // Use a small delay to ensure DOM is updated
-      setTimeout(() => {
-        if (scrollRef.current) {
-          scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-        }
-      }, 10);
-    }
-  }, [messages, isTyping]);
+    const scrollToBottom = () => {
+      if (scrollRef.current) {
+        scrollRef.current.scrollTo({
+          top: scrollRef.current.scrollHeight,
+          behavior: 'smooth'
+        });
+      }
+    };
+    
+    // Scroll immediately when messages change or typing state changes
+    scrollToBottom();
+    
+    // Also scroll after a small delay to ensure DOM updates
+    const timer = setTimeout(scrollToBottom, 100);
+    
+    return () => clearTimeout(timer);
+  }, [messages.length, isTyping]);
 
   return (
-    <ScrollArea className="flex-1 chat-scroll smooth-scroll" ref={scrollRef}>
+    <ScrollArea className="flex-1 chat-scroll auto-scroll" ref={scrollRef}>
       <div className="max-w-4xl mx-auto mobile-responsive min-h-full">
         {messages.length === 0 && !isTyping && (
           <div className="flex items-center justify-center h-full min-h-[300px] md:min-h-[400px] px-2 md:px-4">

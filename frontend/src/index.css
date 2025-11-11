@@ -163,6 +163,11 @@ All colors MUST be HSL.
     -webkit-overflow-scrolling: touch;
   }
   
+  /* Auto-scrolling behavior */
+  .auto-scroll {
+    scroll-behavior: smooth;
+  }
+  
   /* Hide scrollbar */
   .scrollbar-hide {
     -ms-overflow-style: none;
