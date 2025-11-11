@@ -65,30 +65,30 @@ export const ChatWindow = ({
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const scrollToTop = () => {
+    const scrollToBottom = () => {
       if (scrollRef.current) {
         // Access the viewport element directly
         const viewport = scrollRef.current.children[0]; // The first child is the Viewport
         if (viewport) {
           viewport.scrollTo({
-            top: 0,
+            top: viewport.scrollHeight,
             behavior: 'smooth'
           });
         } else {
           // Fallback to scrolling the parent element
           scrollRef.current.scrollTo({
-            top: 0,
+            top: scrollRef.current.scrollHeight,
             behavior: 'smooth'
           });
         }
       }
     };
     
-    // Scroll to top when messages change or typing state changes
-    scrollToTop();
+    // Scroll to bottom when messages change or typing state changes
+    scrollToBottom();
     
     // Also scroll after a small delay to ensure DOM updates
-    const timer = setTimeout(scrollToTop, 100);
+    const timer = setTimeout(scrollToBottom, 100);
     
     return () => clearTimeout(timer);
   }, [messages.length, isTyping]);
