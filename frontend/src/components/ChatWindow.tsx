@@ -66,20 +66,20 @@ export const ChatWindow = ({
   const prevMessagesLength = useRef(messages.length);
 
   useEffect(() => {
-    const scrollToBottom = () => {
+    const scrollToTop = () => {
       if (scrollRef.current) {
         scrollRef.current.scrollTo({
-          top: scrollRef.current.scrollHeight,
+          top: 0,
           behavior: 'smooth'
         });
       }
     };
     
-    // Scroll immediately when messages change or typing state changes
-    scrollToBottom();
+    // Scroll to top when messages change or typing state changes
+    scrollToTop();
     
     // Also scroll after a small delay to ensure DOM updates
-    const timer = setTimeout(scrollToBottom, 100);
+    const timer = setTimeout(scrollToTop, 100);
     
     return () => clearTimeout(timer);
   }, [messages.length, isTyping]);
