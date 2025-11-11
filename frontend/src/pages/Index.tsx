@@ -35,6 +35,7 @@ import { useTheme } from 'next-themes';
 import type { ConversationTemplate } from '@/hooks/useTemplates';
 
 const Index = () => {
+  // State hooks must be called first and in the same order
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -52,6 +53,10 @@ const Index = () => {
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   
+  // All custom hooks must be called in the same order on every render
+  const { settings, updateSettings, resetSettings } = useSettings();
+  const { toast } = useToast();
+  const { theme, setTheme } = useTheme();
   const {
     sessions,
     currentSession,
@@ -66,8 +71,6 @@ const Index = () => {
     bulkDeleteSessions,
     bulkUpdateSessions,
   } = useChat();
-
-  const { settings, updateSettings, resetSettings } = useSettings();
   const { addFeedback, getFeedback } = useFeedback();
   const { 
     favorites, 
@@ -106,8 +109,6 @@ const Index = () => {
     getSubfolders,
   } = useFolders();
   const { currentLanguage } = useLanguage();
-  const { toast } = useToast();
-  const { theme, setTheme } = useTheme();
   
   // Keyboard shortcuts
   useKeyboardShortcuts([

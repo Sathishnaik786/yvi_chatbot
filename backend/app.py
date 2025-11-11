@@ -1,11 +1,24 @@
 from flask import Flask, render_template, request, jsonify, send_from_directory  # type: ignore
 import os
+from difflib import SequenceMatcher
 
 # Handle potential import issues gracefully
 try:
     from flask_cors import CORS  # type: ignore
 except ImportError:
     CORS = None
+    
+# Load environment variables
+try:
+    from dotenv import load_dotenv  # type: ignore
+except ImportError:
+    def load_dotenv():
+        pass
+        
+load_dotenv()
+
+# Import requests
+import requests  # type: ignore
     
 from supabase_client import supabase, get_knowledge_entry, get_all_categories, get_category_entries, log_chat_interaction
 
@@ -88,35 +101,94 @@ synonyms = {
 @app.route("/chat", methods=["POST"])
 def chat():
     data = request.get_json()
-    message = data.get("message", "").strip().lower()
+    user_query = data.get("message", "").strip()
 
-    # Log user query
-    log_chat_interaction(message, "", "chat_request")
-    
-    # Normalize synonyms
-    for key in synonyms:
-        if message == key.lower():
-            message = synonyms[key]
+    # 1️⃣ Search database
+    search_result = search_database(user_query)
 
-    # ✅ First try to fetch from Supabase
+    if search_result:
+        db_data = search_result["match"]
+        context_text = db_data.get("description", "")
+        confidence = search_result["confidence"]
+
+        # 2️⃣ Enrich with Gemini
+        enriched_reply = call_gemini_api(user_query, context_text)
+        reply = enriched_reply
+        source = "🧠 Enriched Hybrid"
+    else:
+        # 3️⃣ Fallback to Gemini
+        reply = call_gemini_api(user_query)
+        source = "🤖 AI Response (Gemini)"
+
+    # 4️⃣ Log the chat
+    log_chat_interaction(user_query, reply, None, source)
+
+    return jsonify({
+        "reply": reply,
+        "source": source
+    })
+
+# ----------------------------
+# Helper functions for hybrid response logic
+# ----------------------------
+def search_database(query: str):
+    """Improved semantic fuzzy search on Supabase data."""
+    if supabase is None:
+        return None
+        
     try:
-        supabase_entry = get_knowledge_entry(message)
-        if supabase_entry:
-            response_data = {
-                "reply": supabase_entry["description"]
-            }
-            # Log successful response
-            log_chat_interaction(message, response_data["reply"], supabase_entry["category"])
-            return jsonify(response_data)
-    except Exception as e:
-        print(f"Error querying Supabase: {e}")
+        result = supabase.table("chatbot_knowledge").select("*").execute()
+        best_match = None
+        best_score = 0
 
-    # ✅ If we get here, no match was found in Supabase
-    response_data = {
-        "reply": "Sorry, I don't have information about that topic. Please ask about our company, services, domains, or location."
-    }
-    log_chat_interaction(message, response_data["reply"], "no_match")
-    return jsonify(response_data)
+        for item in result.data:
+            combined = f"{item.get('title','')} {item.get('description','')}".lower()
+            score = SequenceMatcher(None, query.lower(), combined).ratio()
+            if score > best_score:
+                best_score = score
+                best_match = item
+
+        if best_score > 0.1:
+            return {"match": best_match, "confidence": round(best_score * 100, 1)}
+        return None
+    except Exception as e:
+        print("Database search error:", e)
+        return None
+
+def call_gemini_api(prompt: str, context: str = ""):
+    """Call Gemini API with optional contextual enrichment."""
+    GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+    if not GEMINI_API_KEY:
+        raise Exception("GEMINI_API_KEY not configured")
+        
+    system_prompt = (
+        "You are YVI Tech Assistant — an intelligent AI for YVI Soft Solutions. "
+        "You answer user questions professionally based on provided company data if available. "
+        "If no context is given, use your general knowledge to respond helpfully."
+    )
+
+    full_prompt = f"{system_prompt}\n\n"
+    if context:
+        full_prompt += f"Here is some relevant company data:\n{context}\n\n"
+    full_prompt += f"User: {prompt}\nAssistant:"
+
+    try:
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
+        headers = {"Content-Type": "application/json"}
+        payload = {"contents": [{"parts": [{"text": full_prompt}]}]}
+
+        r = requests.post(url, headers=headers, json=payload, timeout=20)
+        result = r.json()
+        
+        # Check if response has the expected structure
+        if "candidates" in result and len(result["candidates"]) > 0 and "content" in result["candidates"][0] and "parts" in result["candidates"][0]["content"]:
+            return result["candidates"][0]["content"]["parts"][0]["text"]
+        else:
+            raise Exception("Unexpected API response structure")
+
+    except Exception as e:
+        print("Gemini API error:", e)
+        return "I'm having trouble connecting to the AI service right now. Please try again shortly."
 
 # ----------------------------
 # Admin Dashboard Routes

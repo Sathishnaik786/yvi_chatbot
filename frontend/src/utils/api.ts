@@ -14,6 +14,7 @@ export interface ChatRequest {
 
 export interface ChatResponse {
   reply: string;
+  source?: string;
 }
 
 export const sendMessage = async (data: ChatRequest): Promise<ChatResponse> => {

@@ -91,7 +91,7 @@ def get_category_entries(category: str) -> list:
         print(f"Error fetching category entries: {e}")
         return []
 
-def log_chat_interaction(user_query: str, bot_response: str, matched_category = None):
+def log_chat_interaction(user_query: str, bot_response: str, matched_category = None, source = None):
     """
     Log chat interactions for analytics
     """
@@ -103,7 +103,8 @@ def log_chat_interaction(user_query: str, bot_response: str, matched_category = 
         supabase.table("chatbot_logs").insert({
             "user_query": user_query,
             "bot_response": bot_response,
-            "matched_category": matched_category
+            "matched_category": matched_category,
+            "source": source
         }).execute()
     except Exception as e:
         print(f"Error logging chat interaction: {e}")

@@ -7,6 +7,7 @@ export interface Message {
   role: 'user' | 'assistant';
   content: string;
   timestamp: number;
+  source?: string;
 }
 
 export interface ChatSession {
@@ -26,27 +27,6 @@ export const useChat = () => {
   const [currentSessionId, setCurrentSessionId] = useState<string>('');
   const [isTyping, setIsTyping] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  // Load sessions from localStorage
-  useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    const currentId = localStorage.getItem(CURRENT_SESSION_KEY);
-    
-    if (stored) {
-      const parsedSessions = JSON.parse(stored);
-      setSessions(parsedSessions);
-      
-      if (currentId && parsedSessions.some((s: ChatSession) => s.id === currentId)) {
-        setCurrentSessionId(currentId);
-      } else if (parsedSessions.length > 0) {
-        setCurrentSessionId(parsedSessions[0].id);
-      } else {
-        createNewSession();
-      }
-    } else {
-      createNewSession();
-    }
-  }, []);
 
   // Save sessions to localStorage
   useEffect(() => {
@@ -78,6 +58,27 @@ export const useChat = () => {
     setSessions(prev => [newSession, ...prev]);
     setCurrentSessionId(newSession.id);
   }, []);
+
+  // Load sessions from localStorage
+  useEffect(() => {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    const currentId = localStorage.getItem(CURRENT_SESSION_KEY);
+    
+    if (stored) {
+      const parsedSessions = JSON.parse(stored);
+      setSessions(parsedSessions);
+      
+      if (currentId && parsedSessions.some((s: ChatSession) => s.id === currentId)) {
+        setCurrentSessionId(currentId);
+      } else if (parsedSessions.length > 0) {
+        setCurrentSessionId(parsedSessions[0].id);
+      } else {
+        createNewSession();
+      }
+    } else {
+      createNewSession();
+    }
+  }, [createNewSession]);
 
   const switchSession = useCallback((sessionId: string) => {
     setCurrentSessionId(sessionId);
@@ -180,6 +181,7 @@ export const useChat = () => {
         role: 'assistant',
         content: response.reply,
         timestamp: Date.now(),
+        source: response.source,
       };
 
       setSessions(prev => prev.map(session => {
