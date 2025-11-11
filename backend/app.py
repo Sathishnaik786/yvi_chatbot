@@ -30,14 +30,20 @@ if CORS:
     cors_origins = [
         "http://localhost:8080", 
         "http://127.0.0.1:8080",
-        "https://*.netlify.app"
+        "https://*.netlify.app",
+        "https://yvichatbot.netlify.app"
     ]
     # If FRONTEND_URL is set (for production), add it to allowed origins
     frontend_url = os.environ.get('FRONTEND_URL')
     if frontend_url:
         cors_origins.append(frontend_url)
     
-    CORS(app, origins=cors_origins)
+    # Configure CORS with more explicit settings
+    CORS(app, 
+         origins=cors_origins,
+         methods=["GET", "POST", "OPTIONS"],
+         allow_headers=["Content-Type", "Authorization"],
+         supports_credentials=True)
 
 # ----------------------------
 # Knowledge base (with YVI data in paragraph format)
@@ -56,15 +62,19 @@ def load_knowledge_base():
         return
         
     try:
-        response = supabase.table("chatbot_knowledge").select("*").execute()
-        for item in response.data:
-            # Create key from title (lowercase, no special characters)
-            key = item["title"].lower().strip()
-            knowledge_base[key] = {
-                "title": item["title"],
-                "answer": item["description"]
-            }
-        print(f"Loaded {len(knowledge_base)} entries from Supabase")
+        response = supabase.table("chatbot_knowledge").select("*").execute(timeout=10)
+        if response and hasattr(response, 'data') and response.data:
+            for item in response.data:
+                # Create key from title (lowercase, no special characters)
+                key = item["title"].lower().strip()
+                knowledge_base[key] = {
+                    "title": item["title"],
+                    "answer": item["description"]
+                }
+            print(f"Loaded {len(knowledge_base)} entries from Supabase")
+        else:
+            print("No data received from Supabase")
+            load_static_knowledge_base()
     except Exception as e:
         print(f"Error loading knowledge base: {e}")
         # Fallback to static knowledge base if Supabase fails
@@ -137,7 +147,11 @@ def search_database(query: str):
         return None
         
     try:
-        result = supabase.table("chatbot_knowledge").select("*").execute()
+        result = supabase.table("chatbot_knowledge").select("*").execute(timeout=10)
+        if not result or not hasattr(result, 'data'):
+            print("Invalid response from Supabase")
+            return None
+            
         best_match = None
         best_score = 0
 
@@ -177,7 +191,7 @@ def call_gemini_api(prompt: str, context: str = ""):
         headers = {"Content-Type": "application/json"}
         payload = {"contents": [{"parts": [{"text": full_prompt}]}]}
 
-        r = requests.post(url, headers=headers, json=payload, timeout=20)
+        r = requests.post(url, headers=headers, json=payload, timeout=30)
         result = r.json()
         
         # Check if response has the expected structure
