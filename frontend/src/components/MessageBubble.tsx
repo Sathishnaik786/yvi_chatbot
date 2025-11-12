@@ -6,6 +6,7 @@ import { useToast } from '@/hooks/use-toast';
 import { FeedbackDialog } from './FeedbackDialog';
 import { AddFavoriteDialog } from './AddFavoriteDialog';
 import { ThreadingDialog } from './ThreadingDialog';
+import { SocialShareDialog } from './SocialShareDialog';
 import ReactMarkdown from 'react-markdown';
 import type { Message } from '@/hooks/useChat';
 import { cn } from '@/lib/utils';
@@ -41,6 +42,7 @@ interface MessageBubbleProps {
   existingCategories?: string[];
   existingTags?: string[];
   threadCount?: number;
+  shareCode?: string; // Add this new prop
 }
 
 export const MessageBubble = ({ 
@@ -55,12 +57,15 @@ export const MessageBubble = ({
   existingCategories = [],
   existingTags = [],
   threadCount = 0,
+  shareCode, // Add this new prop
 }: MessageBubbleProps) => {
   const [copied, setCopied] = useState(false);
   const [feedbackDialogOpen, setFeedbackDialogOpen] = useState(false);
   const [favoriteDialogOpen, setFavoriteDialogOpen] = useState(false);
   const [threadDialogOpen, setThreadDialogOpen] = useState(false);
+  const [socialShareDialogOpen, setSocialShareDialogOpen] = useState(false); // Add this new state
   const [selectedRating, setSelectedRating] = useState<'positive' | 'negative'>('positive');
+  const [showThankYou, setShowThankYou] = useState(false);
   const { toast } = useToast();
 
   const isUser = message.role === 'user';
@@ -72,13 +77,35 @@ export const MessageBubble = ({
   };
 
   const handleFeedbackClick = (rating: 'positive' | 'negative') => {
-    setSelectedRating(rating);
-    setFeedbackDialogOpen(true);
+    if (rating === 'positive') {
+      // For positive feedback, immediately show thank you message
+      if (onFeedback) {
+        onFeedback(message.id, 'positive', '');
+      }
+      setShowThankYou(true);
+      setTimeout(() => setShowThankYou(false), 3000);
+    } else {
+      // For negative feedback, open the dialog
+      setSelectedRating(rating);
+      setFeedbackDialogOpen(true);
+    }
   };
 
   const handleFeedbackSubmit = (messageId: string, rating: 'positive' | 'negative', comment: string) => {
     if (onFeedback) {
       onFeedback(messageId, rating, comment);
+    }
+    if (rating === 'negative') {
+      toast({ title: 'Feedback submitted', description: 'Thank you for helping us improve!' });
+    }
+    setFeedbackDialogOpen(false);
+  };
+
+  const handleShareClick = () => {
+    if (shareCode) {
+      setSocialShareDialogOpen(true);
+    } else if (onShareClick) {
+      onShareClick(message.id);
     }
   };
 
@@ -151,19 +178,24 @@ export const MessageBubble = ({
                 size="sm"
                 className={cn(
                   "h-7 md:h-8 px-1 md:px-2 touch-target",
-                  feedback?.rating === 'positive' && "text-green-500"
+                  feedback?.rating === 'positive' && "text-green-500 bg-green-500/10"
                 )}
                 onClick={() => handleFeedbackClick('positive')}
                 title="Good response"
               >
                 <ThumbsUp className="h-3 w-3" />
               </Button>
+              {showThankYou && (
+                <div className="absolute mt-8 ml-2 bg-green-500 text-white text-xs px-2 py-1 rounded">
+                  Thank you for your feedback!
+                </div>
+              )}
               <Button
                 variant="ghost"
                 size="sm"
                 className={cn(
                   "h-7 md:h-8 px-1 md:px-2 touch-target",
-                  feedback?.rating === 'negative' && "text-red-500"
+                  feedback?.rating === 'negative' && "text-red-500 bg-red-500/10"
                 )}
                 onClick={() => handleFeedbackClick('negative')}
                 title="Bad response"
@@ -173,12 +205,12 @@ export const MessageBubble = ({
             </>
           )}
           
-          {onShareClick && (
+          {(onShareClick || shareCode) && (
             <Button
               variant="ghost"
               size="sm"
               className="h-7 md:h-8 px-1 md:px-2 touch-target"
-              onClick={() => onShareClick(message.id)}
+              onClick={handleShareClick}
               title="Share message"
             >
               <Share2 className="h-3 w-3" />
@@ -194,6 +226,15 @@ export const MessageBubble = ({
           messageId={message.id}
           initialRating={selectedRating}
           onSubmit={handleFeedbackSubmit}
+        />
+      )}
+
+      {shareCode && (
+        <SocialShareDialog
+          open={socialShareDialogOpen}
+          onOpenChange={setSocialShareDialogOpen}
+          shareCode={shareCode}
+          messageContent={message.content}
         />
       )}
 

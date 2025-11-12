@@ -16,10 +16,11 @@ interface ChatWindowProps {
   onToggleFavorite?: (messageId: string, category: string, tags: string[], note: string) => void;
   onRemoveFavorite?: (messageId: string) => void;
   onCreateThread?: (messageId: string, branchName: string) => void;
-  onShareClick?: (messageId: string) => void; // Add this new prop
+  onShareClick?: (messageId: string) => void;
   existingCategories?: string[];
   existingTags?: string[];
   getThreadCount?: (messageId: string) => number;
+  generateShareCode?: (message: Message) => string;
 }
 
 const EXAMPLE_PROMPTS = [
@@ -114,6 +115,7 @@ export const ChatWindow = ({
   existingCategories,
   existingTags,
   getThreadCount,
+  generateShareCode,
 }: ChatWindowProps) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
@@ -227,6 +229,7 @@ export const ChatWindow = ({
               existingCategories={existingCategories}
               existingTags={existingTags}
               threadCount={getThreadCount?.(message.id)}
+              shareCode={generateShareCode ? generateShareCode(message) : undefined}
             />
             {/* Show dynamic follow-up suggestions directly below bot responses */}
             {message.role === 'assistant' && (index < messages.length - 1 || !isTyping) ? (

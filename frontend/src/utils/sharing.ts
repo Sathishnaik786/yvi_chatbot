@@ -122,6 +122,10 @@ export const shareMessage = (message: Message): string => {
   return generateShareCode(shareData);
 };
 
+export const generateMessageShareCode = (message: Message): string => {
+  return shareMessage(message);
+};
+
 export const generateShareableLink = (code: string): string => {
   const baseUrl = window.location.origin;
   return `${baseUrl}/?share=${encodeURIComponent(code)}`;

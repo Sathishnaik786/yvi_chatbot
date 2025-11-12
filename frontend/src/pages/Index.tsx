@@ -29,6 +29,7 @@ import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { useFolders } from '@/hooks/useFolders';
 import { useLanguage } from '@/hooks/useLanguage';
 import { shareConversation, shareMessage } from '@/utils/sharing';
+import { generateMessageShareCode } from '@/utils/sharing';
 import { ThemeProvider } from 'next-themes';
 import { useToast } from '@/hooks/use-toast';
 import { useTheme } from 'next-themes';
@@ -396,6 +397,7 @@ const Index = () => {
                   existingCategories={getAllCategories()}
                   existingTags={getAllTags()}
                   getThreadCount={getThreadCount}
+                  generateShareCode={generateMessageShareCode} // Add this new prop
                 />
               </div>
               
