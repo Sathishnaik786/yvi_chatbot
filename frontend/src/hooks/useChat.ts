@@ -17,6 +17,7 @@ export interface ChatSession {
   lastUpdated: number;
   folderId?: string | null;
   tags?: string[];
+  archived?: boolean;
 }
 
 const STORAGE_KEY = 'yvi_chat_sessions';
@@ -112,7 +113,7 @@ export const useChat = () => {
 
   const updateSession = useCallback((sessionId: string, updates: Partial<ChatSession>) => {
     setSessions(prev => prev.map(session => 
-      session.id === sessionId ? { ...session, ...updates } : session
+      session.id === sessionId ? { ...session, ...updates, lastUpdated: Date.now() } : session
     ));
   }, []);
 

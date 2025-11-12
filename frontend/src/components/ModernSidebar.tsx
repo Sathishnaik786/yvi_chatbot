@@ -23,7 +23,9 @@ import {
   Moon,
   Sun,
   MoreVertical,
-  Trash2
+  Trash2,
+  FileArchive,
+  Pencil
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
@@ -34,6 +36,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 
 interface ModernSidebarProps {
@@ -43,6 +46,7 @@ interface ModernSidebarProps {
   onNewChat: () => void;
   onSelectSession: (id: string) => void;
   onDeleteSession: (id: string) => void;
+  onUpdateSession?: (id: string, updates: Partial<ChatSession>) => void; // Add this new prop
   isOpen: boolean;
   onToggle: () => void;
   onAuthClick: () => void;
@@ -65,6 +69,7 @@ export const ModernSidebar = ({
   onNewChat,
   onSelectSession,
   onDeleteSession,
+  onUpdateSession,
   isOpen,
   onToggle,
   onAuthClick,
@@ -82,8 +87,43 @@ export const ModernSidebar = ({
   const { user, logout, isAuthenticated } = useAuth();
 
   const filteredSessions = sessions.filter(session =>
-    session.title.toLowerCase().includes(searchQuery.toLowerCase())
+    session.title.toLowerCase().includes(searchQuery.toLowerCase()) && !session.archived
   );
+
+  const archivedSessions = sessions.filter(session => session.archived);
+
+  // Function to handle renaming a chat
+  const handleRenameChat = (sessionId: string, currentTitle: string) => {
+    const newTitle = prompt('Enter new chat title:', currentTitle);
+    if (newTitle !== null && newTitle.trim() !== '' && newTitle !== currentTitle) {
+      if (onUpdateSession) {
+        onUpdateSession(sessionId, { title: newTitle.trim() });
+      } else {
+        // Fallback to localStorage if onUpdateSession is not provided
+        const updatedSessions = sessions.map(s => 
+          s.id === sessionId ? { ...s, title: newTitle.trim(), lastUpdated: Date.now() } : s
+        );
+        localStorage.setItem('yvi_chat_sessions', JSON.stringify(updatedSessions));
+        window.location.reload();
+      }
+    }
+  };
+
+  // Function to handle archiving a chat
+  const handleArchiveChat = (sessionId: string) => {
+    if (window.confirm('Are you sure you want to archive this chat?')) {
+      if (onUpdateSession) {
+        onUpdateSession(sessionId, { archived: true });
+      } else {
+        // Fallback to localStorage if onUpdateSession is not provided
+        const updatedSessions = sessions.map(s => 
+          s.id === sessionId ? { ...s, archived: true, lastUpdated: Date.now() } : s
+        );
+        localStorage.setItem('yvi_chat_sessions', JSON.stringify(updatedSessions));
+        window.location.reload();
+      }
+    }
+  };
 
   return (
     <>
@@ -241,6 +281,25 @@ export const ModernSidebar = ({
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleRenameChat(session.id, session.title);
+                          }}
+                        >
+                          <Pencil className="mr-2 h-4 w-4" />
+                          Rename
+                        </DropdownMenuItem>
+                        <DropdownMenuItem 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleArchiveChat(session.id);
+                          }}
+                        >
+                          <FileArchive className="mr-2 h-4 w-4" />
+                          Archive
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem 
                           className="text-red-600"
                           onClick={(e) => {
                             e.stopPropagation();
@@ -257,6 +316,86 @@ export const ModernSidebar = ({
                   </div>
                 ))
               )}
+
+              {/* Archived Chats Section */}
+              {archivedSessions.length > 0 && (
+                <div className="mt-4">
+                  <div className="px-2 py-1 text-xs font-medium text-sidebar-foreground/70 uppercase tracking-wider">
+                    Archived Chats
+                  </div>
+                  {archivedSessions.map((session) => (
+                    <div key={session.id} className="flex items-center group">
+                      <Button
+                        variant="ghost"
+                        onClick={() => onSelectSession(session.id)}
+                        className={cn(
+                          "flex-1 justify-start gap-2 text-left font-normal",
+                          "text-sidebar-foreground hover:bg-sidebar-accent touch-target",
+                          currentSessionId === session.id && "bg-sidebar-accent"
+                        )}
+                      >
+                        <FileArchive className="h-4 w-4 shrink-0" />
+                        <span className="truncate">{session.title}</span>
+                      </Button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRenameChat(session.id, session.title);
+                            }}
+                          >
+                            <Pencil className="mr-2 h-4 w-4" />
+                            Rename
+                          </DropdownMenuItem>
+                          <DropdownMenuItem 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              // Unarchive the chat
+                              if (onUpdateSession) {
+                                onUpdateSession(session.id, { archived: false });
+                              } else {
+                                // Fallback to localStorage if onUpdateSession is not provided
+                                const updatedSessions = sessions.map(s => 
+                                  s.id === session.id ? { ...s, archived: false, lastUpdated: Date.now() } : s
+                                );
+                                localStorage.setItem('yvi_chat_sessions', JSON.stringify(updatedSessions));
+                                window.location.reload();
+                              }
+                            }}
+                          >
+                            <FileArchive className="mr-2 h-4 w-4" />
+                            Unarchive
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem 
+                            className="text-red-600"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (window.confirm('Are you sure you want to delete this chat? This action cannot be undone.')) {
+                                onDeleteSession(session.id);
+                              }
+                            }}
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Delete Chat
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  ))}
+                </div>
+              )}
+
             </div>
           ) : (
             <div className="space-y-1 py-2">

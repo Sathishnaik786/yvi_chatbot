@@ -344,6 +344,7 @@ const Index = () => {
             onNewChat={createNewSession}
             onSelectSession={switchSession}
             onDeleteSession={deleteSession}
+            onUpdateSession={updateSession}
             isOpen={sidebarOpen}
             onToggle={() => setSidebarOpen(!sidebarOpen)}
             onAuthClick={() => setAuthModalOpen(true)}
