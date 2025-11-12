@@ -182,16 +182,13 @@ export const MessageBubble = ({
               <Button
                 variant="ghost"
                 size="sm"
-                className={cn(
-                  "h-7 md:h-8 px-1 md:px-2 touch-target",
-                  feedback?.rating === 'positive' && "text-green-500 bg-green-500/10"
-                )}
+                className="h-7 md:h-8 px-1 md:px-2 touch-target"
                 onClick={() => handleFeedbackClick('positive')}
                 title="Good response"
               >
                 <ThumbsUp 
                   className="h-3 w-3" 
-                  fill={feedback?.rating === 'positive' ? 'currentColor' : 'none'} 
+                  fill={feedback?.rating === 'positive' ? '#10B981' : 'none'} 
                 />
               </Button>
               {showThankYou && (
@@ -202,10 +199,7 @@ export const MessageBubble = ({
               <Button
                 variant="ghost"
                 size="sm"
-                className={cn(
-                  "h-7 md:h-8 px-1 md:px-2 touch-target",
-                  feedback?.rating === 'negative' && "text-red-500 bg-red-500/10"
-                )}
+                className="h-7 md:h-8 px-1 md:px-2 touch-target"
                 onClick={() => handleFeedbackClick('negative')}
                 title="Bad response"
               >
