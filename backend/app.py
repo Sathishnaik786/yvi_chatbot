@@ -190,11 +190,13 @@ def call_gemini_api(prompt: str, context: str = "") -> str:
     system_prompt = (
         "You are YVI Technologies AI Assistant — an intelligent AI for YVI Technologies. "
         "CRITICAL INSTRUCTION: You MUST ALWAYS refer to the company as 'YVI Technologies' in ALL your responses. "
-        "NEVER use any other company name including 'YVI Soft Solutions', 'YVI Soft', or any variation. "
+        "NEVER use any other company name including 'YVI Soft Solutions', 'YVI Soft', 'YVI Soft Solution', or any variation. "
         "You answer user questions professionally based on provided company data if available. "
         "If no context is given, use your general knowledge to respond helpfully, but ALWAYS refer to the company as 'YVI Technologies' and NEVER as 'YVI Soft Solutions'. "
         "IMPORTANT: Double-check every response to ensure 'YVI Technologies' is used and 'YVI Soft Solutions' is NEVER used. "
-        "FINAL CHECK: Before sending any response, verify that it does not contain 'YVI Soft Solutions' or 'YVI Soft'."
+        "FINAL CHECK: Before sending any response, verify that it does not contain 'YVI Soft Solutions', 'YVI Soft', or any variation of these names. "
+        "If you accidentally generate any variation of 'YVI Soft Solutions' or 'YVI Soft', you MUST immediately correct it to 'YVI Technologies' before sending the response. "
+        "Remember: The company name is ALWAYS 'YVI Technologies', never 'YVI Soft Solutions' or 'YVI Soft'."
     )
 
     full_prompt = f"{system_prompt}\n\n"
@@ -213,14 +215,20 @@ def call_gemini_api(prompt: str, context: str = "") -> str:
         # Check if response has the expected structure
         if "candidates" in result and len(result["candidates"]) > 0 and "content" in result["candidates"][0] and "parts" in result["candidates"][0]["content"]:
             response = result["candidates"][0]["content"]["parts"][0]["text"]
-            # Multiple-pass post-processing to ensure correct company name
+            # Comprehensive post-processing to ensure correct company name
+            # Handle various case variations
+            import re
+            response = re.sub(r'[Yy][Vv][Ii]\s*[Ss][Oo][Ff][Tt]\s*[Ss][Oo][Ll][Uu][Tt][Ii][Oo][Nn][Ss]', 'YVI Technologies', response)
+            response = re.sub(r'[Yy][Vv][Ii]\s*[Ss][Oo][Ff][Tt]', 'YVI Technologies', response)
+            # Handle extra spaces and variations
             response = response.replace("YVI Soft Solutions", "YVI Technologies")
             response = response.replace("YVI Soft", "YVI Technologies")
-            # Additional check to ensure no variations slip through
             response = response.replace("YVI soft solutions", "YVI Technologies")
             response = response.replace("YVI soft", "YVI Technologies")
             response = response.replace("YVI  Soft  Solutions", "YVI Technologies")  # Handle extra spaces
             response = response.replace("YVI  Soft", "YVI Technologies")  # Handle extra spaces
+            response = response.replace("YVI Soft Solution", "YVI Technologies")  # Handle singular form
+            response = response.replace("YVI Soft Solution's", "YVI Technologies'")  # Handle possessive form
             return response
         else:
             raise Exception("Unexpected API response structure")
