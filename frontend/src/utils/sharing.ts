@@ -36,13 +36,21 @@ type TemplateData = {
 
 export const generateShareCode = (data: ShareData): string => {
   const jsonString = JSON.stringify(data);
-  const base64 = btoa(jsonString);
+  // Handle Unicode characters by encoding to UTF-8 first
+  const utf8Bytes = new TextEncoder().encode(jsonString);
+  const base64 = btoa(String.fromCharCode(...utf8Bytes));
   return base64;
 };
 
 export const parseShareCode = (code: string): ShareData | null => {
   try {
-    const jsonString = atob(code);
+    // Decode UTF-8 encoded base64
+    const binaryString = atob(code);
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    const jsonString = new TextDecoder().decode(bytes);
     const data = JSON.parse(jsonString);
     
     // Validate structure
