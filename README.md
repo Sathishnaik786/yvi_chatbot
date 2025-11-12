@@ -142,4 +142,4 @@ The application uses a dual-server setup during development:
 
 ## License
 
-This project is proprietary to YVI Tech Solutions. All rights reserved.
+This project is proprietary to YVI Technologies. All rights reserved.

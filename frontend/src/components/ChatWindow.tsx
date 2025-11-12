@@ -26,7 +26,7 @@ const EXAMPLE_PROMPTS = [
   {
     icon: '🏢',
     title: 'About Company',
-    prompt: 'Tell me about YVI Tech Solutions',
+    prompt: 'Tell me about YVI Technologies',
   },
   {
     icon: '🛠️',
@@ -120,7 +120,7 @@ export const ChatWindow = ({
                   Welcome to YVI Assistant
                 </h2>
                 <p className="text-muted-foreground text-base md:text-lg max-w-xl mx-auto leading-relaxed">
-                  I'm here to help you learn about our company, services, and expertise. Ask me anything about YVI Tech Solutions:
+                  I'm here to help you learn about our company, services, and expertise. Ask me anything about YVI Technologies:
                 </p>
               </div>
               

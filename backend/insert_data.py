@@ -1,12 +1,12 @@
 """
-Script to insert YVI Tech Solutions data into Supabase tables
+Script to insert YVI Technologies data into Supabase tables
 """
 import os
 from supabase_client import supabase
 
 def insert_knowledge_data():
     """
-    Insert YVI Tech Solutions knowledge base data into Supabase
+    Insert YVI Technologies knowledge base data into Supabase
     """
     if supabase is None:
         print("Supabase not configured. Please set SUPABASE_URL and SUPABASE_KEY in .env file")
@@ -19,7 +19,7 @@ def insert_knowledge_data():
             "category": "About",
             "title": "About Us",
             "keywords": ["about", "company", "info", "overview"],
-            "description": "YVI Tech Solutions is a technology company delivering IT consulting, software development, and digital solutions tailored for enterprises worldwide."
+            "description": "YVI Technologies is a technology company delivering IT consulting, software development, and digital solutions tailored for enterprises worldwide."
         },
         {
             "category": "Contact",
@@ -121,7 +121,7 @@ def insert_knowledge_data():
             "category": "Other Capabilities",
             "title": "Digital Marketing",
             "keywords": ["digital marketing", "seo", "content", "campaigns"],
-            "description": "Dizi Babu YVI Technologies, the digital division of YVI Tech, specializes in AI-powered digital marketing strategies.\n\nWe provide:\n- AI-Generated Content\n- Personalized Campaigns\n- Predictive Analytics\n- Automated SEO\n- Creative Asset Production\n\nWhy Choose Us:\n- Generative AI Expertise\n- Innovation-Driven\n- Scalable Solutions\n- Data-Driven Approach\n\nWe help businesses enhance engagement, improve ROI, and strengthen their digital presence."
+            "description": "Dizi Babu YVI Technologies, the digital division of YVI Technologies, specializes in AI-powered digital marketing strategies.\n\nWe provide:\n- AI-Generated Content\n- Personalized Campaigns\n- Predictive Analytics\n- Automated SEO\n- Creative Asset Production\n\nWhy Choose Us:\n- Generative AI Expertise\n- Innovation-Driven\n- Scalable Solutions\n- Data-Driven Approach\n\nWe help businesses enhance engagement, improve ROI, and strengthen their digital presence."
         },
         {
             "category": "Other Capabilities",

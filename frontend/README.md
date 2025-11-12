@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-This is a chat application for YVI Tech Solutions.
+This is a chat application for YVI Technologies.
 
 ## How to edit this code?
 
