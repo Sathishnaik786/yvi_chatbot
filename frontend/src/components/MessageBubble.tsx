@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Copy, ThumbsUp, ThumbsDown, Check, Star, GitBranch, Share2 } from 'lucide-react';
+import { Copy, ThumbsDown, Check, Star, GitBranch, Share2 } from 'lucide-react';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import { motion } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
 import { FeedbackDialog } from './FeedbackDialog';
@@ -57,13 +58,13 @@ export const MessageBubble = ({
   existingCategories = [],
   existingTags = [],
   threadCount = 0,
-  shareCode, // Add this new prop
+  shareCode,
 }: MessageBubbleProps) => {
   const [copied, setCopied] = useState(false);
   const [feedbackDialogOpen, setFeedbackDialogOpen] = useState(false);
   const [favoriteDialogOpen, setFavoriteDialogOpen] = useState(false);
   const [threadDialogOpen, setThreadDialogOpen] = useState(false);
-  const [socialShareDialogOpen, setSocialShareDialogOpen] = useState(false); // Add this new state
+  const [socialShareDialogOpen, setSocialShareDialogOpen] = useState(false);
   const [selectedRating, setSelectedRating] = useState<'positive' | 'negative'>('positive');
   const [showThankYou, setShowThankYou] = useState(false);
   const { toast } = useToast();
@@ -183,7 +184,7 @@ export const MessageBubble = ({
                 onClick={() => handleFeedbackClick('positive')}
                 title="Good response"
               >
-                <ThumbsUp className="h-3 w-3" />
+                <ThumbUpIcon className="h-3 w-3" style={{ fill: feedback?.rating === 'positive' ? 'currentColor' : 'none' }} />
               </Button>
               {showThankYou && (
                 <div className="absolute mt-8 ml-2 bg-green-500 text-white text-xs px-2 py-1 rounded">
