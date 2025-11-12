@@ -124,18 +124,17 @@ def chat():
         # 2️⃣ Enrich with Gemini
         enriched_reply = call_gemini_api(user_query, context_text)
         reply = enriched_reply
-        source = "🧠 Enriched Hybrid"
+        source = "Enriched Hybrid"
     else:
         # 3️⃣ Fallback to Gemini
         reply = call_gemini_api(user_query)
-        source = "🤖 AI Response (Gemini)"
+        source = "AI Response"
 
     # 4️⃣ Log the chat
-    log_chat_interaction(user_query, reply, None, source)
+    log_chat_interaction(user_query, reply, None, None)
 
     return jsonify({
-        "reply": reply,
-        "source": source
+        "reply": reply
     })
 
 # ----------------------------

@@ -125,21 +125,6 @@ export const MessageBubble = ({
           ) : (
             <TypingEffect text={message.content} speed={20} />
           )}
-          
-          {/* Source badge */}
-          {message.source && (
-            <div className="mt-2">
-              <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                message.source.includes('Database') 
-                  ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100' 
-                  : message.source.includes('Hybrid') 
-                    ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-100'
-                    : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-100'
-              }`}>
-                {message.source}
-              </span>
-            </div>
-          )}
         </div>
       </div>
 

@@ -106,34 +106,38 @@ export const ChatWindow = ({
     <div className="h-full overflow-y-auto chat-scroll smooth-scroll auto-scroll" ref={scrollRef}>
       <div className="max-w-4xl mx-auto mobile-responsive min-h-full" ref={innerRef}>
         {messages.length === 0 && !isTyping && (
-          <div className="flex items-center justify-center h-full min-h-[300px] md:min-h-[400px] px-2 md:px-4">
-            <div className="text-center space-y-4 md:space-y-6 max-w-3xl">
-              <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
+          <div className="flex items-center justify-center h-full min-h-screen w-full px-4">
+            <div className="text-center space-y-6 max-w-2xl mx-auto py-12">
+              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto shadow-lg">
                 <img 
                   src="/logo.png" 
                   alt="YVI Assistant Logo" 
-                  className="w-12 h-8 md:w-12 md:h-12 object-contain"
+                  className="w-12 h-12 object-contain"
                 />
               </div>
-              <h2 className="text-xl md:text-2xl font-semibold">Welcome to YVI Assistant</h2>
-              <p className="text-muted-foreground max-w-md mx-auto text-sm md:text-base">
-                I'm here to help you learn about our company, services, and expertise. Ask me anything about YVI Tech Solutions:
-              </p>
+              <div className="space-y-4">
+                <h2 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                  Welcome to YVI Assistant
+                </h2>
+                <p className="text-muted-foreground text-base md:text-lg max-w-xl mx-auto leading-relaxed">
+                  I'm here to help you learn about our company, services, and expertise. Ask me anything about YVI Tech Solutions:
+                </p>
+              </div>
               
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 md:gap-3 mt-4 md:mt-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8">
                 {EXAMPLE_PROMPTS.map((example, index) => (
                   <button
                     key={index}
                     onClick={() => onExampleClick(example.prompt)}
-                    className="p-3 md:p-4 rounded-lg border border-border bg-card hover:bg-accent transition-colors text-left group touch-target"
+                    className="p-4 rounded-xl border border-border bg-card hover:bg-accent transition-all duration-200 text-left group touch-target shadow-sm hover:shadow-md"
                   >
-                    <div className="flex items-start gap-2 md:gap-3">
-                      <span className="text-xl md:text-2xl">{example.icon}</span>
+                    <div className="flex items-start gap-3">
+                      <span className="text-2xl">{example.icon}</span>
                       <div className="flex-1">
-                        <h3 className="font-medium text-sm mb-1 group-hover:text-primary transition-colors">
+                        <h3 className="font-semibold text-base mb-1 group-hover:text-primary transition-colors">
                           {example.title}
                         </h3>
-                        <p className="text-xs text-muted-foreground line-clamp-2">
+                        <p className="text-sm text-muted-foreground line-clamp-2">
                           {example.prompt}
                         </p>
                       </div>
