@@ -52,6 +52,11 @@ const FOLLOW_UP_PROMPTS = [
   "How can I get in touch with your team?"
 ];
 
+// Helper function to get first 3 words
+const getFirstThreeWords = (sentence: string): string => {
+  return sentence.split(' ').slice(0, 3).join(' ');
+};
+
 export const ChatWindow = ({ 
   messages, 
   isTyping, 
@@ -184,14 +189,14 @@ export const ChatWindow = ({
             {/* Show follow-up suggestions after bot responses */}
             {message.role === 'assistant' && (index < messages.length - 1 || !isTyping) ? (
               <div className="px-4 pb-4">
-                <div className="flex flex-wrap gap-2 justify-center">
+                <div className="flex gap-2 justify-start">
                   {FOLLOW_UP_PROMPTS.slice(0, 3).map((prompt, promptIndex) => (
                     <button
                       key={promptIndex}
                       onClick={() => onExampleClick(prompt)}
-                      className="px-3 py-1.5 text-sm rounded-full border border-border bg-card hover:bg-accent transition-all duration-200 text-muted-foreground hover:text-foreground shadow-sm"
+                      className="px-3 py-2 text-sm rounded-lg border border-border bg-card hover:bg-accent transition-all duration-200 text-muted-foreground hover:text-foreground shadow-sm whitespace-nowrap"
                     >
-                      {prompt}
+                      {getFirstThreeWords(prompt)}
                     </button>
                   ))}
                 </div>
