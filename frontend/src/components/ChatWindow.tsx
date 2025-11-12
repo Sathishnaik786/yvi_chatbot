@@ -45,6 +45,13 @@ const EXAMPLE_PROMPTS = [
   },
 ];
 
+// New suggestion prompts for after responses
+const FOLLOW_UP_PROMPTS = [
+  "What services do you offer?",
+  "Tell me more about your expertise",
+  "How can I get in touch with your team?"
+];
+
 export const ChatWindow = ({ 
   messages, 
   isTyping, 
@@ -56,7 +63,7 @@ export const ChatWindow = ({
   onToggleFavorite,
   onRemoveFavorite,
   onCreateThread,
-  onShareClick, // Add this new prop
+  onShareClick,
   existingCategories,
   existingTags,
   getThreadCount,
@@ -158,21 +165,39 @@ export const ChatWindow = ({
           </div>
         )}
 
-        {messages.map((message) => (
-          <MessageBubble
-            key={message.id}
-            message={message}
-            feedback={getFeedback?.(message.id)}
-            onFeedback={onFeedback}
-            isFavorite={isFavorite?.(message.id)}
-            onToggleFavorite={onToggleFavorite}
-            onRemoveFavorite={onRemoveFavorite}
-            onCreateThread={onCreateThread}
-            onShareClick={onShareClick} // Add this new prop
-            existingCategories={existingCategories}
-            existingTags={existingTags}
-            threadCount={getThreadCount?.(message.id)}
-          />
+        {messages.map((message, index) => (
+          <div key={message.id}>
+            <MessageBubble
+              key={message.id}
+              message={message}
+              feedback={getFeedback?.(message.id)}
+              onFeedback={onFeedback}
+              isFavorite={isFavorite?.(message.id)}
+              onToggleFavorite={onToggleFavorite}
+              onRemoveFavorite={onRemoveFavorite}
+              onCreateThread={onCreateThread}
+              onShareClick={onShareClick}
+              existingCategories={existingCategories}
+              existingTags={existingTags}
+              threadCount={getThreadCount?.(message.id)}
+            />
+            {/* Show follow-up suggestions after bot responses */}
+            {message.role === 'assistant' && (index < messages.length - 1 || !isTyping) ? (
+              <div className="px-4 pb-4">
+                <div className="flex flex-wrap gap-2 justify-center">
+                  {FOLLOW_UP_PROMPTS.slice(0, 3).map((prompt, promptIndex) => (
+                    <button
+                      key={promptIndex}
+                      onClick={() => onExampleClick(prompt)}
+                      className="px-3 py-1.5 text-sm rounded-full border border-border bg-card hover:bg-accent transition-all duration-200 text-muted-foreground hover:text-foreground shadow-sm"
+                    >
+                      {prompt}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+          </div>
         ))}
 
         {isTyping && <TypingIndicator />}
