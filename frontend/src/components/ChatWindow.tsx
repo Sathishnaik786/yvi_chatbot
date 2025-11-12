@@ -26,72 +26,115 @@ interface ChatWindowProps {
 const EXAMPLE_PROMPTS = [
   {
     icon: '🏢',
-    title: 'About Company',
-    prompt: 'Tell me about YVI Technologies',
+    title: 'About YVI Technologies',
+    prompt: 'Can you tell me about YVI Technologies and what the company does?',
   },
   {
-    icon: '🛠️',
-    title: 'Our Services',
-    prompt: 'What services do you offer?',
+    icon: '🧠',
+    title: 'AI & Automation',
+    prompt: 'How does YVI Technologies use AI and automation in its solutions?',
   },
   {
-    icon: '🌐',
-    title: 'Domains & Expertise',
-    prompt: 'What domains do you specialize in?',
+    icon: '☁️',
+    title: 'Cloud & DevOps',
+    prompt: 'What kind of cloud and DevOps services does YVI Technologies provide?',
+  },
+  {
+    icon: '💼',
+    title: 'Enterprise Solutions',
+    prompt: 'How does YVI Technologies help enterprises with ERP and digital transformation?',
+  },
+  {
+    icon: '🔒',
+    title: 'Cybersecurity',
+    prompt: 'What cybersecurity and compliance services do you offer?',
   },
   {
     icon: '📍',
-    title: 'Locations & Contact',
-    prompt: 'Where are you located and how can I contact you?',
+    title: 'Contact & Locations',
+    prompt: 'Where is YVI Technologies located and how can I get in touch with the team?',
+  },
+  {
+    icon: '🚀',
+    title: 'Careers',
+    prompt: 'How can I apply or join the team at YVI Technologies?',
   },
 ];
 
 // Dynamic suggestion prompts based on context
 const generateDynamicSuggestions = (lastMessage: string, messageHistory: Message[]): string[] => {
-  // Extract keywords from the last message
   const keywords = lastMessage.toLowerCase().match(/\b(\w+)\b/g) || [];
-  
+
   // Base suggestions
   const baseSuggestions = [
-    "Tell me more details",
-    "What else should I know",
-    "How does this work"
+    "Tell me more about your services",
+    "Can you explain that in detail?",
+    "Do you have any recent projects?"
   ];
-  
-  // Context-based suggestions
-  if (keywords.some(word => ['service', 'services', 'offer', 'offering'].includes(word))) {
+
+  // Context: Services
+  if (keywords.some(word => ['service', 'services', 'offer', 'solutions', 'project'].includes(word))) {
     return [
-      "What industries do you serve?",
-      "Do you offer custom solutions?",
-      "What's your pricing model?"
+      "Do you provide end-to-end development?",
+      "Can you customize solutions for clients?",
+      "What industries do you work with most?"
     ];
   }
-  
-  if (keywords.some(word => ['company', 'about', 'organization'].includes(word))) {
+
+  // Context: Company
+  if (keywords.some(word => ['company', 'about', 'organization', 'yvi', 'technologies'].includes(word))) {
     return [
-      "When was YVI Technologies founded?",
-      "What's your company culture?",
-      "How many employees do you have?"
+      "Who founded YVI Technologies?",
+      "What is YVI's mission and vision?",
+      "How big is your team currently?"
     ];
   }
-  
-  if (keywords.some(word => ['contact', 'location', 'address', 'phone', 'email'].includes(word))) {
+
+  // Context: Contact
+  if (keywords.some(word => ['contact', 'location', 'address', 'email', 'reach'].includes(word))) {
     return [
-      "What are your office hours?",
-      "Do you have international offices?",
-      "What's the best way to reach you?"
+      "Can I book a consultation with YVI?",
+      "Do you have offices outside India?",
+      "Is there a customer support email?"
     ];
   }
-  
-  if (keywords.some(word => ['technology', 'tech', 'software', 'development'].includes(word))) {
+
+  // Context: AI & Technology
+  if (keywords.some(word => ['ai', 'machine', 'intelligence', 'nlp', 'technology', 'software', 'development'].includes(word))) {
     return [
-      "What technologies do you use?",
-      "Do you provide technical support?",
-      "What's your development process?"
+      "What tech stack does YVI use?",
+      "Do you develop AI-powered applications?",
+      "Can you integrate Gemini or GPT into products?"
     ];
   }
-  
-  // Default to base suggestions if no specific context
+
+  // Context: Careers
+  if (keywords.some(word => ['career', 'job', 'join', 'team', 'apply'].includes(word))) {
+    return [
+      "What roles are currently open?",
+      "How can I apply for an internship?",
+      "What's your recruitment process?"
+    ];
+  }
+
+  // Context: Cloud/DevOps
+  if (keywords.some(word => ['cloud', 'devops', 'infrastructure', 'aws', 'azure', 'gcp'].includes(word))) {
+    return [
+      "Do you manage cloud migrations?",
+      "Do you use Kubernetes or Docker?",
+      "How do you ensure scalability?"
+    ];
+  }
+
+  // Context: Cybersecurity
+  if (keywords.some(word => ['security', 'cybersecurity', 'audit', 'compliance', 'risk'].includes(word))) {
+    return [
+      "How do you handle data privacy?",
+      "Do you offer vulnerability assessments?",
+      "What compliance standards do you follow?"
+    ];
+  }
+
   return baseSuggestions;
 };
 
