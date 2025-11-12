@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Copy, ThumbsDown, Check, Star, GitBranch, Share2 } from 'lucide-react';
-import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import { Copy, ThumbsUp, ThumbsDown, Check, Star, GitBranch, Share2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
 import { FeedbackDialog } from './FeedbackDialog';
@@ -184,7 +183,10 @@ export const MessageBubble = ({
                 onClick={() => handleFeedbackClick('positive')}
                 title="Good response"
               >
-                <ThumbUpIcon className="h-3 w-3" style={{ fill: feedback?.rating === 'positive' ? 'currentColor' : 'none' }} />
+                <ThumbsUp 
+                  className="h-3 w-3" 
+                  fill={feedback?.rating === 'positive' ? 'currentColor' : 'none'} 
+                />
               </Button>
               {showThankYou && (
                 <div className="absolute mt-8 ml-2 bg-green-500 text-white text-xs px-2 py-1 rounded">
