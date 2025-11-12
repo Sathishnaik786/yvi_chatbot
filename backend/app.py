@@ -194,15 +194,22 @@ def call_gemini_api(prompt: str, context: str = "") -> str:
         "If users mention YVI Soft Solutions, clarify that the company is now called YVI Technologies."
     )
 
-    full_prompt = f"{system_prompt}\n\n"
+    combined_prompt = f"{system_prompt}\n\n"
     if context:
-        full_prompt += f"Here is some relevant company data:\n{context}\n\n"
-    full_prompt += f"User: {prompt}\nAssistant:"
+        combined_prompt += f"Here is some relevant company data:\n{context}\n\n"
+    combined_prompt += f"""
+Always refer to the company as YVI Technologies.
+If any previous version or old name appears (like YVI Soft Solutions),
+clarify that it has been rebranded to YVI Technologies.
+
+User: {prompt}
+Assistant:
+"""
 
     try:
         url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
         headers = {"Content-Type": "application/json"}
-        payload = {"contents": [{"parts": [{"text": full_prompt}]}]}
+        payload = {"contents": [{"parts": [{"text": combined_prompt}]}]}
 
         r = requests.post(url, headers=headers, json=payload, timeout=30)
         result = r.json()
