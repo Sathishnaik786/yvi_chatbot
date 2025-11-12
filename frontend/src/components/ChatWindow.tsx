@@ -228,15 +228,15 @@ export const ChatWindow = ({
               existingTags={existingTags}
               threadCount={getThreadCount?.(message.id)}
             />
-            {/* Show dynamic follow-up suggestions after bot responses */}
+            {/* Show dynamic follow-up suggestions directly below bot responses */}
             {message.role === 'assistant' && (index < messages.length - 1 || !isTyping) ? (
               <div className="px-4 pb-4">
-                <div className="flex gap-2 justify-start flex-wrap">
+                <div className="flex gap-2 justify-start flex-nowrap overflow-x-auto">
                   {generateDynamicSuggestions(message.content, messages.slice(0, index + 1)).slice(0, 3).map((prompt, promptIndex) => (
                     <button
                       key={promptIndex}
                       onClick={() => onExampleClick(prompt)}
-                      className="px-3 py-2 text-sm rounded-lg border border-border bg-card hover:bg-accent transition-all duration-200 text-muted-foreground hover:text-foreground shadow-sm whitespace-nowrap"
+                      className="px-3 py-2 text-sm rounded-lg border border-border bg-card hover:bg-accent transition-all duration-200 text-muted-foreground hover:text-foreground shadow-sm whitespace-nowrap flex-shrink-0"
                     >
                       {getFirstThreeWords(prompt)}
                     </button>
