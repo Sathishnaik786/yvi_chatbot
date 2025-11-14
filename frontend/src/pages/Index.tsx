@@ -401,7 +401,7 @@ const Index = () => {
                 />
               </div>
               
-              <div className="sticky bottom-0 left-0 right-0 z-50 bg-transparent border-t-0 lg:border-t-0 lg:bg-transparent lg:z-auto lg:static" style={{ position: '-webkit-sticky', contain: 'layout' }}>
+              <div className="sticky bottom-0 left-0 right-0 z-50 bg-background border-t border-border lg:z-10 lg:static" style={{ position: '-webkit-sticky', position: 'sticky', contain: 'layout' }}>
                 <InputBar
                   onSend={handleSendMessage}
                   disabled={isTyping}

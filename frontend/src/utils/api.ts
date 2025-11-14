@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'https://your-backend-domain.com';
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
 
 export interface ChatRequest {
   message: string;
@@ -23,7 +23,7 @@ export const sendMessage = async (data: ChatRequest): Promise<ChatResponse> => {
       headers: {
         'Content-Type': 'application/json',
       },
-      timeout: 30000,
+      timeout: 30000, // 30 seconds timeout
     });
     return response.data;
   } catch (error) {
@@ -32,9 +32,9 @@ export const sendMessage = async (data: ChatRequest): Promise<ChatResponse> => {
         throw new Error('Request timeout. Please try again.');
       }
       if (!error.response) {
-        throw new Error('Network error. Please check your connection.');
+        throw new Error('Network error. Please check your connection and ensure the backend server is running.');
       }
-      throw new Error(error.response.data?.error || 'Failed to send message');
+      throw new Error(error.response.data?.error || 'Failed to send message. Please try again.');
     }
     throw error;
   }

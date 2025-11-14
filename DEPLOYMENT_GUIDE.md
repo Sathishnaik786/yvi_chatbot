@@ -9,6 +9,8 @@
 2. Ensure you have your Supabase credentials:
    - `SUPABASE_URL`
    - `SUPABASE_KEY`
+   
+3. Get your Gemini API key from [Google AI Studio](https://aistudio.google.com/)
 
 ## Frontend Deployment (Netlify)
 
@@ -28,7 +30,8 @@
 3. Configure build settings:
    - Build command: `npm run build`
    - Publish directory: `dist`
-4. Add environment variables if needed
+4. Add environment variables:
+   - `VITE_BACKEND_URL`: Your Render backend URL (e.g., https://your-app.onrender.com)
 
 ## Backend Deployment (Render)
 
@@ -39,6 +42,8 @@ Flask==2.3.2
 flask-cors==4.0.0
 supabase==2.4.5
 python-dotenv==1.0.0
+gunicorn==20.1.0
+requests==2.31.0
 ```
 
 ### 2. Create a `render.yaml` file in your project root:
@@ -46,12 +51,14 @@ python-dotenv==1.0.0
 services:
   - type: web
     name: yvi-backend
-    env: python
+    runtime: python
     buildCommand: pip install -r backend/requirements.txt
-    startCommand: python backend/app.py
+    startCommand: gunicorn --bind 0.0.0.0:$PORT app:app
     envVars:
       - key: PYTHON_VERSION
         value: 3.9.16
+      - key: FLASK_ENV
+        value: production
 ```
 
 ### 3. Deploy to Render
@@ -62,6 +69,8 @@ services:
 5. Add environment variables:
    - `SUPABASE_URL`: your Supabase URL
    - `SUPABASE_KEY`: your Supabase service role key
+   - `GEMINI_API_KEY`: your Gemini API key
+   - `FRONTEND_URL`: your Netlify frontend URL (e.g., https://your-app.netlify.app)
 
 ## Post-Deployment Configuration
 
@@ -72,7 +81,7 @@ In your frontend code, look for API calls to `http://localhost:5000` and replace
 
 ### Environment Variables
 Set these environment variables in Netlify for your frontend:
-- `VITE_API_URL`: Your Render backend URL
+- `VITE_BACKEND_URL`: Your Render backend URL
 
 ## Troubleshooting
 
@@ -80,6 +89,23 @@ Set these environment variables in Netlify for your frontend:
 1. **CORS errors**: Make sure your Flask CORS configuration allows your Netlify domain
 2. **Environment variables not loading**: Double-check variable names and values
 3. **Build failures**: Ensure all dependencies are in requirements.txt
+4. **Request timeout errors**: 
+   - Check that your backend is properly deployed and running
+   - Verify your Gemini API key is valid
+   - Ensure your frontend is pointing to the correct backend URL
+   - Check Render logs for any errors
+
+### Timeout Configuration
+The application is configured with appropriate timeouts:
+- Backend Supabase queries: 10 seconds
+- Backend Gemini API calls: 30 seconds
+- Frontend API requests: 30 seconds
+
+If you're experiencing timeout issues:
+1. Check your internet connection
+2. Verify your Gemini API key has sufficient quota
+3. Try simplifying your questions
+4. Check Render logs for any backend errors
 
 ### Checking Logs
 - Netlify: Check deploy logs in the Netlify dashboard

@@ -44,7 +44,7 @@ export const Header = ({
   const { theme, setTheme } = useTheme();
 
   return (
-    <header className="bg-transparent sticky top-0 z-50 lg:z-10 lg:static" style={{ position: '-webkit-sticky' }}>
+    <header className="bg-background border-b border-border sticky top-0 z-50 lg:z-10 lg:static" style={{ position: '-webkit-sticky', position: 'sticky' }}>
       <div className="flex items-center justify-between px-2 md:px-4 h-14">
         {/* Mobile: Menu button on left */}
         <div className="flex items-center lg:hidden">

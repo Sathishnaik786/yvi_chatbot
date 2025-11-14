@@ -62,7 +62,7 @@ def load_knowledge_base():
         return
         
     try:
-        response = supabase.table("chatbot_knowledge").select("*").execute(timeout=10)
+        response = supabase.table("chatbot_knowledge").select("*").execute()
         if response and hasattr(response, 'data') and response.data:
             for item in response.data:
                 # Create key from title (lowercase, no special characters)
@@ -159,7 +159,7 @@ def search_database(query: str):
         return None
         
     try:
-        result = supabase.table("chatbot_knowledge").select("*").execute(timeout=10)
+        result = supabase.table("chatbot_knowledge").select("*").execute()
         if not result or not hasattr(result, 'data'):
             print("Invalid response from Supabase")
             return None
@@ -211,6 +211,7 @@ Assistant:
         headers = {"Content-Type": "application/json"}
         payload = {"contents": [{"parts": [{"text": combined_prompt}]}]}
 
+        # Set timeout to 30 seconds to match frontend
         r = requests.post(url, headers=headers, json=payload, timeout=30)
         result = r.json()
         
@@ -235,6 +236,10 @@ Assistant:
         else:
             raise Exception("Unexpected API response structure")
 
+    except requests.exceptions.Timeout:
+        print("Gemini API timeout error")
+        fallback_response = "The request is taking longer than expected. Please try a shorter question or try again later."
+        return fallback_response
     except Exception as e:
         print("Gemini API error:", e)
         # Even in error cases, ensure we don't leak the wrong company name
