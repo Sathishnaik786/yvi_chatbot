@@ -2,7 +2,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/yvi-tech-assistant">
-    <img src="https://yvitech.com/logo.png" alt="Logo" width="80" height="80">
+    <img src="[https://yvitech.com/assets/YVI_Logo-DvbmuYB_-Duai6T2c.png" alt="Logo" width="80" height="80">
   </a>
 
   <h3 align="center">YVI Technologies Assistant</h3>
