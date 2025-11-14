@@ -285,7 +285,7 @@ export const ChatWindow = ({
         {memoizedMessages.map((message, index) => (
           <div key={message.id} className="clear-both">
             <MessageBubble
-              key={message.id}
+              key={`${message.id}-${isTyping ? 'typing' : 'done'}`}
               message={message}
               feedback={getFeedback?.(message.id)}
               onFeedback={onFeedback}

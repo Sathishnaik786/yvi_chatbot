@@ -102,7 +102,14 @@ export const useChat = () => {
 
   const switchSession = useCallback((sessionId: string) => {
     setCurrentSessionId(sessionId);
+    // Reset typing state when switching sessions
+    setIsTyping(false);
   }, []);
+  
+  // Reset typing state when current session changes
+  useEffect(() => {
+    setIsTyping(false);
+  }, [currentSessionId]);
 
   const deleteSession = useCallback((sessionId: string) => {
     setSessions(prev => {
