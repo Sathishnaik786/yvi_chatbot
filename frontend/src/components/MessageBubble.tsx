@@ -163,7 +163,7 @@ export const MessageBubble = ({
           {isUser ? (
             <ReactMarkdown>{message.content}</ReactMarkdown>
           ) : isTyping ? (
-            <TypingEffect text={message.content} speed={20} />
+            <TypingEffect text={message.content} speed={30} />
           ) : (
             <ReactMarkdown>{message.content}</ReactMarkdown>
           )}
